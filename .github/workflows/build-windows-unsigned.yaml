@@ -1,0 +1,28 @@
+name: Build for Windows (unsigned)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [mouse-back-button]
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - name: Create Windows Installer
+        run: node app/build/create-signed-windows-installer.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MailspringSetup
+          path: app/dist/MailspringSetup.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mailspring-win32-x64-portable
+          path: app/dist/mailspring-win32-x64
