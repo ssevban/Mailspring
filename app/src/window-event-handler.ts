@@ -169,6 +169,14 @@ export default class WindowEventHandler {
       }
     });
 
+    // The mouse back button reaches the page as button 3. BrowserWindow's
+    // 'app-command' event doesn't fire for it on every Windows mouse driver.
+    document.addEventListener('mouseup', (event: MouseEvent) => {
+      if (event.button === 3) {
+        AppEnv.commands.dispatch('core:pop-sheet'); // same as Escape
+      }
+    });
+
     document.addEventListener('drop', this.onDrop);
 
     document.addEventListener('click', (event: MouseEvent) => {

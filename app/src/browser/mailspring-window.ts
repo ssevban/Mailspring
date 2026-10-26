@@ -372,14 +372,6 @@ export default class MailspringWindow extends EventEmitter {
       this.browserWindow.webContents.send('browser-window-hide');
     });
 
-    // Windows/Linux: the mouse back button arrives as an app-command.
-    // Treat it like Escape so an open thread pops back to the list.
-    this.browserWindow.on('app-command', (event, command) => {
-      if (command === 'browser-backward') {
-        this.sendCommandToBrowserWindow('core:pop-sheet');
-      }
-    });
-
     this.browserWindow.webContents.on('will-navigate', (event, url) => {
       event.preventDefault();
     });
