@@ -80,3 +80,6 @@ client_secret.json
 /test-results
 /playwright-report
 /playwright/test-results/
+# Self-host config (generated from .env by scripts/selfhost-config.js)
+.env
+app/selfhost-config.json

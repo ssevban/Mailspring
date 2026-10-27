@@ -5,6 +5,9 @@ import {
   RegExpUtils,
   Message,
 } from 'mailspring-exports';
+import selfhost from '../../../selfhost-config.json';
+
+const TRACKING_HOST = new URL(selfhost.serverUrl).host;
 
 const TrackingBlacklist = [
   {
@@ -172,7 +175,7 @@ export function removeTrackingPixels(message: Message) {
     // reply or a bounce, our read receipt could still be in the body and could
     // trigger additional opens. (isFromMe is not sufficient!) [BG NOTE "HMID"]
     if (
-      imageURL.includes(`getmailspring.com/open/${message.accountId.toUpperCase()}`) ||
+      imageURL.includes(`${TRACKING_HOST}/open/${message.accountId.toUpperCase()}`) ||
       imageURL.includes(`me=${encodeURIComponent(message.accountId)}`)
     ) {
       return true;
@@ -180,7 +183,7 @@ export function removeTrackingPixels(message: Message) {
 
     // Also detect the new opaque-token format: /o/<base64url-token>.png
     // The token is a Base64url-encoded JSON object containing the accountId.
-    if (imageURL.includes('getmailspring.com/o/')) {
+    if (imageURL.includes(`${TRACKING_HOST}/o/`)) {
       try {
         const match = imageURL.match(/\/o\/([A-Za-z0-9_-]+)\.png/);
         if (match) {

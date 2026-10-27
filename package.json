@@ -74,6 +74,7 @@
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js",
+    "prestart": "node scripts/selfhost-config.js",
     "start": "electron ./app --enable-logging --dev",
     "lint": "eslint --fix -c .eslintrc \"app/src/**/*.{ts,tsx}\" \"app/internal_packages/**/*.{ts,tsx}\"",
     "lint:check": "eslint -c .eslintrc \"app/src/**/*.{ts,tsx}\" \"app/internal_packages/**/*.{ts,tsx}\"",
@@ -82,6 +83,7 @@
     "test-window": "node scripts/test.js --test=window",
     "test:e2e": "npx playwright test --config playwright/playwright.config.ts",
     "tsc-watch": "tsc -w -p ./app --noEmit",
+    "prebuild": "node scripts/selfhost-config.js",
     "build": "node app/build/build.js"
   },
   "overrides": {

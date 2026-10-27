@@ -38,7 +38,8 @@ export default class AutoUpdateManager extends EventEmitter {
     this.updateFeedURL();
     this.config.onDidChange('identity.id', this.updateFeedURL);
 
-    setTimeout(() => this.setupAutoUpdater(), 0);
+    // Self-hosted build: never contact updates.getmailspring.com.
+    this.setState(UnsupportedState);
   }
 
   updateFeedURL = () => {
@@ -163,6 +164,7 @@ export default class AutoUpdateManager extends EventEmitter {
   }
 
   check({ hidePopups }: { hidePopups?: boolean } = {}) {
+    if (!autoUpdater) return;
     this.updateFeedURL();
     if (!hidePopups) {
       autoUpdater.once('update-not-available', this.onUpdateNotAvailable);
@@ -172,6 +174,7 @@ export default class AutoUpdateManager extends EventEmitter {
   }
 
   install() {
+    if (!autoUpdater) return;
     autoUpdater.quitAndInstall();
   }
 

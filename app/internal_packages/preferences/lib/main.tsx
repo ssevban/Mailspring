@@ -28,7 +28,7 @@ export function activate() {
   PreferencesUIStore.registerPreferencesTab(
     new PreferencesUIStore.TabItem({
       tabId: 'Subscription',
-      displayName: localized('Subscription'),
+      displayName: localized('Mailspring ID'),
       componentClassFn: () => require('./tabs/preferences-identity').default,
       order: 3,
     })

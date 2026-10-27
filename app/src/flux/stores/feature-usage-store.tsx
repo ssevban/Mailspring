@@ -109,12 +109,9 @@ class _FeatureUsageStore extends MailspringStore {
     });
   }
 
+  // Self-hosted build: no quotas, so the upgrade modal is never shown.
   isUsable(feature: string) {
-    const { usedInPeriod, quota } = this._dataForFeature(feature);
-    if (!quota) {
-      return true;
-    }
-    return usedInPeriod < quota;
+    return true;
   }
 
   async markUsedOrUpgrade(feature: string, lexicon: FeatureLexicon) {

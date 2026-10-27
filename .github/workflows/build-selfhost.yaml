@@ -1,0 +1,66 @@
+name: Build self-hosted (Windows + macOS)
+
+# Unsigned builds pointed at the self-hosted Mailspring-API.
+# Set the repository variable MAILSPRING_SERVER_URL (Settings > Secrets and
+# variables > Actions > Variables) before running.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            artifact: mailspring-windows-x64
+          - os: macos-26
+            artifact: mailspring-macos-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      MAILSPRING_SERVER_URL: ${{ vars.MAILSPRING_SERVER_URL }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Write self-host config
+        run: node scripts/selfhost-config.js
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build -- --skip-installers
+
+      - name: Sign (ad-hoc) and zip macOS app
+        if: runner.os == 'macOS'
+        run: |
+          cd app/dist/Mailspring-darwin-*
+          codesign --force --deep --sign - Mailspring.app
+          ditto -c -k --keepParent Mailspring.app "$GITHUB_WORKSPACE/app/dist/Mailspring.zip"
+
+      - name: Upload macOS app
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: app/dist/Mailspring.zip
+          if-no-files-found: error
+
+      - name: Upload Windows app
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: app/dist/mailspring-win32-x64
+          if-no-files-found: error

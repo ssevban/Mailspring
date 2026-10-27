@@ -197,11 +197,7 @@ class InitialPreferencesPage extends React.Component<
   }
 
   _onFinished = () => {
-    if (IdentityStore.hasProFeatures()) {
-      require('electron').ipcRenderer.send('account-setup-successful');
-    } else {
-      OnboardingActions.moveToPage('initial-subscription');
-    }
+    require('electron').ipcRenderer.send('account-setup-successful');
   };
 }
 

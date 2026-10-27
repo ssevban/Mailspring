@@ -28,6 +28,8 @@ export const PermanentErrorCodes = [
 export const CanceledErrorCodes = [-123, 'ECONNABORTED'];
 export const SampleTemporaryErrorCode = 504;
 
+import selfhost from '../../selfhost-config.json';
+
 let IdentityStore = null;
 
 // server option
@@ -43,7 +45,7 @@ export function rootURLForServer(server: 'identity') {
     return {
       development: 'http://localhost:5101',
       staging: 'https://id-staging.getmailspring.com',
-      production: 'https://id.getmailspring.com',
+      production: selfhost.serverUrl,
     }[env];
   }
   throw new Error('rootURLForServer: You must provide a valid `server` value');
