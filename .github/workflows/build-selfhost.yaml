@@ -57,10 +57,19 @@ jobs:
           path: app/dist/Mailspring.zip
           if-no-files-found: error
 
+      # mailsync exits with code 2 unless its own path contains "mailspring",
+      # so ship the app inside a Mailspring/ folder.
+      - name: Move Windows app into a Mailspring folder
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force app/dist/upload | Out-Null
+          Move-Item app/dist/mailspring-win32-x64 app/dist/upload/Mailspring
+
       - name: Upload Windows app
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
-          path: app/dist/mailspring-win32-x64
+          path: app/dist/upload
           if-no-files-found: error
