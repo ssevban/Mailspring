@@ -39,6 +39,17 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      # Upstream's Windows mailsync lowercases folder names in the user's locale, so on a
+      # Turkish system INBOX never gets the inbox role. Use the patched build from our fork.
+      - name: Replace mailsync with the patched build
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download selfhost-win-ia32 -R "${{ github.repository_owner }}/mailspring-sync" -p mailsync.tar.gz -D app --clobber
+          tar -xzf app/mailsync.tar.gz -C app
+
       - name: Build
         run: npm run build -- --skip-installers
 
