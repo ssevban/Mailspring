@@ -39,4 +39,4 @@ if (url.protocol !== 'https:' && url.protocol !== 'http:') {
 
 const serverUrl = url.origin + url.pathname.replace(/\/+$/, '');
 fs.writeFileSync(outPath, JSON.stringify({ serverUrl }, null, 2) + '\n');
-console.log(`selfhost-config: ${serverUrl}`);
+console.log(`selfhost-config: wrote ${path.relative(root, outPath)}`);
