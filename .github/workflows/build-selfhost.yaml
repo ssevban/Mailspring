@@ -96,6 +96,7 @@ jobs:
           MAC_CERT_P12: ${{ secrets.MAC_CERT_P12 }}
           MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         run: |
+          if [ -z "$MAC_CERT_P12" ] || [ -z "$MAC_CERT_PASSWORD" ]; then echo "::error::MAC_CERT_P12 / MAC_CERT_PASSWORD secrets are not set"; exit 1; fi
           KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
           KEYCHAIN_PASSWORD="$(uuidgen)"
           echo "$MAC_CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
