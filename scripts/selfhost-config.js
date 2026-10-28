@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Writes app/selfhost-config.json from MAILSPRING_SERVER_URL (process env or the
-// repo root .env file) so the self-hosted server URL is never committed.
+// Writes app/selfhost-config.json from MAILSPRING_SERVER_URL and the optional
+// MAILSPRING_UPDATE_TOKEN (process env or the repo root .env file) so neither is ever
+// committed. Without a token the build never checks for updates.
 const fs = require('fs');
 const path = require('path');
 
@@ -19,7 +20,9 @@ function readDotEnv(file) {
   return result;
 }
 
-const raw = process.env.MAILSPRING_SERVER_URL || readDotEnv(envPath).MAILSPRING_SERVER_URL;
+const dotEnv = readDotEnv(envPath);
+const raw = process.env.MAILSPRING_SERVER_URL || dotEnv.MAILSPRING_SERVER_URL;
+const updateToken = process.env.MAILSPRING_UPDATE_TOKEN || dotEnv.MAILSPRING_UPDATE_TOKEN || null;
 if (!raw) {
   console.error('MAILSPRING_SERVER_URL is not set. Copy .env.example to .env and fill it in.');
   process.exit(1);
@@ -38,5 +41,10 @@ if (url.protocol !== 'https:' && url.protocol !== 'http:') {
 }
 
 const serverUrl = url.origin + url.pathname.replace(/\/+$/, '');
-fs.writeFileSync(outPath, JSON.stringify({ serverUrl }, null, 2) + '\n');
+if (updateToken && !/^[A-Za-z0-9_-]{32,128}$/.test(updateToken)) {
+  console.error('MAILSPRING_UPDATE_TOKEN must be 32-128 characters of [A-Za-z0-9_-].');
+  process.exit(1);
+}
+
+fs.writeFileSync(outPath, JSON.stringify({ serverUrl, updateToken }, null, 2) + '\n');
 console.log(`selfhost-config: wrote ${path.relative(root, outPath)}`);

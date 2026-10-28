@@ -5,6 +5,7 @@ import path from 'path';
 import os from 'os';
 import fs from 'fs';
 import { localized } from '../intl';
+import selfhost from '../../selfhost-config.json';
 
 let autoUpdater = null;
 
@@ -38,8 +39,11 @@ export default class AutoUpdateManager extends EventEmitter {
     this.updateFeedURL();
     this.config.onDidChange('identity.id', this.updateFeedURL);
 
-    // Self-hosted build: never contact updates.getmailspring.com.
-    this.setState(UnsupportedState);
+    if (selfhost.updateToken) {
+      setTimeout(() => this.setupAutoUpdater(), 0);
+    } else {
+      this.setState(UnsupportedState);
+    }
   }
 
   updateFeedURL = () => {
@@ -60,12 +64,7 @@ export default class AutoUpdateManager extends EventEmitter {
       }
     }
 
-    let host = `updates.getmailspring.com`;
-    if (this.config.get('env') === 'staging') {
-      host = `updates-staging.getmailspring.com`;
-    }
-
-    this.feedURL = `https://${host}/check/${params.platform}/${params.arch}/${params.version}/${params.id}/${params.channel}`;
+    this.feedURL = `${selfhost.serverUrl}/update-check/${selfhost.updateToken}/${params.platform}/${params.arch}/${params.version}`;
     if (autoUpdater) {
       autoUpdater.setFeedURL(this.feedURL);
     }
