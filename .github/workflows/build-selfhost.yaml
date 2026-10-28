@@ -3,9 +3,9 @@ name: Build self-hosted (Windows + macOS)
 # Unsigned Windows installer and self-signed macOS app pointed at the self-hosted
 # Mailspring-API, uploaded to its auto-update directory.
 #
-# Variables: MAILSPRING_SERVER_URL
-# Secrets:   MAILSPRING_UPDATE_TOKEN, DEPLOY_HOST, DEPLOY_SSH_KEY, DEPLOY_KNOWN_HOSTS,
-#            MAC_CERT_P12 (base64), MAC_CERT_PASSWORD
+# Repository secrets: MAILSPRING_SERVER_URL, MAILSPRING_UPDATE_TOKEN, DEPLOY_HOST,
+# DEPLOY_SSH_KEY, DEPLOY_KNOWN_HOSTS, MAC_CERT_P12 (base64), MAC_CERT_PASSWORD.
+# The server URL is a secret, not a variable, so the logs mask it.
 
 on:
   workflow_dispatch:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      MAILSPRING_SERVER_URL: ${{ vars.MAILSPRING_SERVER_URL }}
+      MAILSPRING_SERVER_URL: ${{ secrets.MAILSPRING_SERVER_URL }}
       MAILSPRING_UPDATE_TOKEN: ${{ secrets.MAILSPRING_UPDATE_TOKEN }}
       VERSION: ${{ needs.version.outputs.version }}
 
@@ -58,7 +58,10 @@ jobs:
           cache: 'npm'
 
       - name: Write self-host config
-        run: node scripts/selfhost-config.js
+        shell: bash
+        run: |
+          if [ -z "$MAILSPRING_UPDATE_TOKEN" ]; then echo "::error::MAILSPRING_UPDATE_TOKEN secret is not set"; exit 1; fi
+          node scripts/selfhost-config.js
 
       - name: Install Dependencies
         run: npm ci
