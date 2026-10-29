@@ -454,7 +454,7 @@ export const FlagButtons = (props: { items: Thread[] }) => (
   >
     <ToggleStarredButton {...props} />
     <HiddenToggleImportantButton {...props} />
-    <ToggleUnreadButton {...props} />
+    <ArchiveButton {...props} />
   </RovingTabIndexToolbar>
 );
 FlagButtons.displayName = 'FlagButtons';
@@ -466,7 +466,7 @@ export const MoveButtons = (props: { items: Thread[] }) => (
     className="button-group"
     style={{ order: -107 } as React.CSSProperties}
   >
-    <ArchiveButton {...props} />
+    <ToggleUnreadButton {...props} />
     <MarkAsSpamButton {...props} />
     <HiddenGenericRemoveButton {...props} />
     <TrashButton {...props} />
