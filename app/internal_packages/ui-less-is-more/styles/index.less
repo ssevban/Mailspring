@@ -295,8 +295,13 @@ body.is-blurred .thread-list.handler-split .list-item.selected {
 }
 
 // Remove gradients quick action buttons
-.thread-list .list-item .list-column-HoverActions .action.action-archive {
-  background: url('../static/images/thread-list-quick-actions/ic-quick-button-archive@2x.png')
+.thread-list .list-item .list-column-HoverActions .action.action-read {
+  background: url('../static/images/thread-list-quick-actions/ic-quick-button-markasread@2x.png')
+      center no-repeat,
+    @less-highlight;
+}
+.thread-list .list-item .list-column-HoverActions .action.action-unread {
+  background: url('../static/images/thread-list-quick-actions/ic-quick-button-markasunread@2x.png')
       center no-repeat,
     @less-highlight;
 }

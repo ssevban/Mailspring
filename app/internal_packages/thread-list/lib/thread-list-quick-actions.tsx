@@ -10,42 +10,43 @@ import {
 const sameThreadId = (prev: { thread: Thread }, next: { thread: Thread }) =>
   prev.thread.id === next.thread.id;
 
-export const ThreadArchiveQuickAction: React.FC<{ thread: Thread }> = React.memo(({ thread }) => {
-  const allowed = FocusedPerspectiveStore.current().canArchiveThreads([thread]);
-  if (!allowed) {
-    return <span />;
-  }
+export const ThreadUnreadQuickAction: React.FC<{ thread: Thread }> = React.memo(
+  ({ thread }) => {
+    const label = localized(`Mark as %@`, thread.unread ? localized('Read') : localized('Unread'));
 
-  const onArchive = (event: React.MouseEvent | React.KeyboardEvent) => {
-    const tasks = TaskFactory.tasksForArchiving({
-      source: 'Quick Actions: Thread List',
-      threads: [thread],
-      perspective: FocusedPerspectiveStore.current(),
-    });
-    Actions.queueTasks(tasks);
-    event.stopPropagation();
-  };
+    const onToggleUnread = (event: React.MouseEvent | React.KeyboardEvent) => {
+      Actions.queueTask(
+        TaskFactory.taskForSettingUnread({
+          threads: [thread],
+          unread: !thread.unread,
+          source: 'Quick Actions: Thread List',
+        })
+      );
+      event.stopPropagation();
+    };
 
-  return (
-    <div
-      key="archive"
-      role="button"
-      tabIndex={0}
-      title={localized('Archive')}
-      aria-label={localized('Archive')}
-      style={{ order: 100 }}
-      className="btn action action-archive"
-      onClick={onArchive}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onArchive(e);
-        }
-      }}
-    />
-  );
-}, sameThreadId);
-ThreadArchiveQuickAction.displayName = 'ThreadArchiveQuickAction';
+    return (
+      <div
+        key="unread"
+        role="button"
+        tabIndex={0}
+        title={label}
+        aria-label={label}
+        style={{ order: 100 }}
+        className={`btn action ${thread.unread ? 'action-read' : 'action-unread'}`}
+        onClick={onToggleUnread}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggleUnread(e);
+          }
+        }}
+      />
+    );
+  },
+  (prev, next) => sameThreadId(prev, next) && prev.thread.unread === next.thread.unread
+);
+ThreadUnreadQuickAction.displayName = 'ThreadUnreadQuickAction';
 
 export const ThreadTrashQuickAction: React.FC<{ thread: Thread }> = React.memo(({ thread }) => {
   const allowed = FocusedPerspectiveStore.current().canMoveThreadsTo([thread], 'trash');

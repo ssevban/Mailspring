@@ -10,7 +10,7 @@ import {
 
 import { localized, FocusedPerspectiveStore, Utils, DateUtils, Thread } from 'mailspring-exports';
 
-import { ThreadArchiveQuickAction, ThreadTrashQuickAction } from './thread-list-quick-actions';
+import { ThreadUnreadQuickAction, ThreadTrashQuickAction } from './thread-list-quick-actions';
 import ThreadListParticipants from './thread-list-participants';
 import ThreadListIcon from './thread-list-icon';
 import { ThreadWithMessagesMetadata } from './types';
@@ -158,7 +158,7 @@ const c5 = new ListTabular.Column({
           containersRequired={false}
           children={[
             <ThreadTrashQuickAction key="thread-trash-quick-action" thread={thread} />,
-            <ThreadArchiveQuickAction key="thread-archive-quick-action" thread={thread} />,
+            <ThreadUnreadQuickAction key="thread-unread-quick-action" thread={thread} />,
           ]}
           matching={{ role: 'ThreadListQuickAction' }}
           className="thread-injected-quick-actions"
